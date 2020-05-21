@@ -23,7 +23,6 @@ video=cv2.VideoCapture(0)
 
 # This keeps the webcam on until it is stopped manually
 while True:
-
     # Videos are many pictures that are put together and therefore this is obtaining every picture frame recorded and declaring it as a variable
     check, frame = video.read()
     # This variable is to state that until this point no motion has been recorded
@@ -50,7 +49,7 @@ while True:
 
     # Finding the difference in shapes and objects in the binary image ie. threshold image. We use the copy of the threshold image 
     # to avoid altering the real threshold image and the mode and method are then parsed on how to define the contours
-    (_,cnts,_)=cv2.findContours(threshf.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    (cnts,_)=cv2.findContours(threshf.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
     # Using the contours we can determine whether motion or an object has been detected based on the area of the contours. If greater than
     # 10,000 status changes to 1 showing motion else it goes back to the beginning of the while loop
@@ -64,7 +63,8 @@ while True:
         (x,y,w,h)=cv2.boundingRect(contour)
         # Here we parse in the coordinates, color and the thickness of the rectangle
         cv2.rectangle(frame, (x,y), (x+w, y+h),(255,0,0), 3)
-        # appending the status values to the statuslist variable
+
+    # appending the status values to the statuslist variable
     statuslist.append(status)
 
     # conditionals to determine and record the time an object is detected and when it gets out of the frame. The times are then
@@ -73,7 +73,7 @@ while True:
         time.append(datetime.now())
     if statuslist[-1] == 0 and statuslist[-2] == 1:
         time.append(datetime.now())
-
+        
     # showing the video based on the different frames created from the colored,grayscale,difference and threshold images
     cv2.imshow("Grey",gray)
     cv2.imshow("Delta",deltaf)
@@ -91,7 +91,7 @@ while True:
 
 # Appending the time data to the dataframe
 for x in range(0,len(time), 2):
-    df.append({"Start":time[x],"End":time[x+1]},ignore_index=True)
+    df=df.append({"Start":time[x],"End":time[x+1]},ignore_index=True)
 
 # exporting the dataframe in csv format
 df.to_csv("time.csv")
